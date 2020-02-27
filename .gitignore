@@ -1,0 +1,39 @@
+# Quartus Folder
+datashhet_OV7670/
+db/
+db2/
+greybox_tmp/
+incremental_db/
+output_files/
+simulation/
+.qsys_edit/
+ip/
+pll_vga/
+
+# Quartus File
+*.bdf
+*.qpf
+*.pdf
+*.qsf
+*.qip
+*.bsf
+*.ppf
+*.cmp
+*.qsys
+*.scopcinfo
+*.vwf
+*.qsys
+*.sopcinfo
+*.qws
+
+# Not my files
+i3c2.vhd
+ov7670_capture.vhd
+ov7670_controller.vhd
+debounce.vhd
+pll.vhd
+
+# Backup Files
+*.v
+*.v.bak
+*.vhd.bak

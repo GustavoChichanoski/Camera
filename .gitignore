@@ -27,6 +27,7 @@ pll_vga/
 *.inc
 *.sopcinfo
 *.qws
+*.rpt
 
 # Not my files
 i3c2.vhd
@@ -39,3 +40,4 @@ pll.vhd
 *.v
 *.v.bak
 *.vhd.bak
+Camera_nativelink_simulation.rpt

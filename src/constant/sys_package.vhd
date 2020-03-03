@@ -15,7 +15,7 @@ package sys_package is
         length : unsigned(3 downto 0);
     end record sdram_type;
     
-    type BANK         is array (3 downto 0) of natural range 0 to 26;
+    type    BANK         is array (3 downto 0) of natural range 0 to 26;
     subtype address_type is std_logic_vector(24 downto 0);
     subtype byte         is std_logic_vector(15 downto 0);
     
@@ -25,6 +25,32 @@ package sys_package is
         WRITE, WRITEA, READ, READA, 
         BST, NOP, DESL, ENB, MASK
     );
+    
+    component sdram is 
+        port
+        (
+            -- User interface
+            sys_clk     : in    std_logic;
+            sdr_addr    : in    address_type;
+            sdr_write   : in    std_logic_vector(127 downto 0);
+            sdr_read    : out   std_logic_vector(127 downto 0);
+            sdr_rw      : in    std_logic_vector(  1 downto 0); -- Posição 0 : Read - Posicao 1 : Write
+            sdr_done    : out   std_logic;
+            sdr_busy    : out   std_logic;
+            -- SDRAM interface
+            DRAM_DQ     : inout byte;                           -- Data I/O
+            DRAM_ADDR   : out   std_logic_vector(12 downto 0);  -- A0 - A12 Row Address Input : A0 - A9 Column Address Input
+            DRAM_BA     : out   std_logic_vector( 1 downto 0);  -- Bank Select Address Input
+            DRAM_CLK    : out   std_logic;                      -- System Clock Input
+            DRAM_CKE    : out   std_logic;                      -- Clock Enable
+            DRAM_LDQM   : out   std_logic;                      -- x16 Lower Byte, Input/Output Mask
+            DRAM_UDQM   : out   std_logic;                      -- x16 Upper Byte, Input/Output Mask
+            DRAM_WE_N   : out   std_logic;                      -- Write Enable (Habilita a escrita)
+            DRAM_CAS_N  : out   std_logic;                      -- Column Address Strobe Command (Comando de Armazenar o endereço como coluna)
+            DRAM_RAS_N  : out   std_logic;                      -- Row Address Strobe Command (Comando de Armazenar o endereço como linha) 
+            DRAM_CS_N   : out   std_logic                       -- Chip Select
+        );
+    end component sdram;
     
     component camera is
         generic

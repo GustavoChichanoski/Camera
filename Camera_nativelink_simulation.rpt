@@ -1,0 +1,90 @@
+Info: Start Nativelink Simulation process
+
+========= EDA Simulation Settings =====================
+
+Sim Mode              :  Gate
+Family                :  cyclonev
+Quartus root          :  c:/intelfpga_lite/19.1/quartus/bin64/
+Quartus sim root      :  c:/intelfpga_lite/19.1/quartus/eda/sim_lib
+Simulation Tool       :  modelsim-altera
+Simulation Language   :  vhdl
+Version               :  93
+Simulation Mode       :  GUI
+Sim Output File       :  Camera.vho
+Sim SDF file          :  Camera__vhdl.sdo
+Sim dir               :  simulation\modelsim
+
+=======================================================
+
+Info: Starting NativeLink simulation with ModelSim-Altera software
+Sourced NativeLink script c:/intelfpga_lite/19.1/quartus/common/tcl/internal/nativelink/modelsim.tcl
+Probing transcript
+ModelSim-Altera Info: # Reading C:/intelFPGA_pro/19.1/modelsim_ase/tcl/vsim/pref.tcl
+ModelSim-Altera Info: # do Camera_run_msim_gate_vhdl.do
+ModelSim-Altera Info: # if {[file exists gate_work]} {
+ModelSim-Altera Info: # 	vdel -lib gate_work -all
+ModelSim-Altera Info: # }
+ModelSim-Altera Info: # vlib gate_work
+ModelSim-Altera Info: # vmap work gate_work
+ModelSim-Altera Info: # Model Technology ModelSim - Intel FPGA Edition vmap 10.6d Lib Mapping Utility 2018.02 Feb 24 2018
+ModelSim-Altera Info: # vmap work gate_work 
+ModelSim-Altera Info: # Copying C:/intelFPGA_pro/19.1/modelsim_ase/win32aloem/../modelsim.ini to modelsim.ini
+ModelSim-Altera Info: # Modifying modelsim.ini
+ModelSim-Altera Info: # 
+ModelSim-Altera Info: # vcom -93 -work work {Camera.vho}
+ModelSim-Altera Info: # Model Technology ModelSim - Intel FPGA Edition vcom 10.6d Compiler 2018.02 Feb 24 2018
+ModelSim-Altera Info: # Start time: 09:51:13 on Mar 03,2020
+ModelSim-Altera Info: # vcom -reportprogress 300 -93 -work work Camera.vho 
+ModelSim-Altera Info: # -- Loading package STANDARD
+ModelSim-Altera Error: # ** Error: Camera.vho(32): (vcom-1598) Library "cyclonev" not found.
+ModelSim-Altera Info: # -- Loading package TEXTIO
+ModelSim-Altera Info: # -- Loading package std_logic_1164
+ModelSim-Altera Info: # -- Loading package VITAL_Timing
+ModelSim-Altera Info: # -- Loading package VITAL_Primitives
+ModelSim-Altera Info: # -- Loading package dffeas_pack
+ModelSim-Altera Info: # -- Loading package altera_primitives_components
+ModelSim-Altera Info: # -- Loading package altera_lnsim_components
+ModelSim-Altera Error: # ** Error: Camera.vho(36): (vcom-1136) Unknown identifier "CYCLONEV".
+ModelSim-Altera Error: # ** Error: Camera.vho(39): VHDL Compiler exiting
+ModelSim-Altera Info: # End time: 09:51:16 on Mar 03,2020, Elapsed time: 0:00:03
+ModelSim-Altera Info: # Errors: 3, Warnings: 0
+ModelSim-Altera Error: # ** Error: C:/intelFPGA_pro/19.1/modelsim_ase/win32aloem/vcom failed.
+ModelSim-Altera Info: # Error in macro ./Camera_run_msim_gate_vhdl.do line 8
+ModelSim-Altera Info: # C:/intelFPGA_pro/19.1/modelsim_ase/win32aloem/vcom failed.
+ModelSim-Altera Info: #     while executing
+ModelSim-Altera Info: # "vcom -93 -work work {Camera.vho}"
+Error: Errors encountered while running modelsim do file
+Error: NativeLink simulation flow was NOT successful
+
+
+
+================The following additional information is provided to help identify the cause of error while running nativelink scripts=================
+Nativelink TCL script failed with errorCode:  1
+Nativelink TCL script failed with errorInfo:  1
+    (procedure "launch_sim" line 1)
+    invoked from within
+"launch_sim launch_args_hash"
+    ("eval" body line 1)
+    invoked from within
+"eval launch_sim launch_args_hash"
+    invoked from within
+"if [ info exists ::errorCode ] {
+                set savedCode $::errorCode
+                set savedInfo $::errorInfo
+                error $result $..."
+    invoked from within
+"if [catch {eval launch_sim launch_args_hash} result ] {
+            set status 1
+            if [ info exists ::errorCode ] {
+                set save..."
+    (procedure "run_sim" line 74)
+    invoked from within
+"run_sim run_sim_args_hash"
+    invoked from within
+"if [ info exists ::errorCode ] {
+            set savedCode $::errorCode
+            set savedInfo $::errorInfo
+            error "$result" $savedInfo ..."
+    (procedure "run_eda_simulation_tool" line 334)
+    invoked from within
+"run_eda_simulation_tool eda_opts_hash"

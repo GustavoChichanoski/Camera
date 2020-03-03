@@ -14,13 +14,4 @@ architecture arch of cam_controler is
     
 begin
     
-    control : process(sys_clk, rst)
-    begin
-        if rst = '0' then
-            
-        elsif rising_edge(sys_clk) then
-            
-        end if;
-    end process control;
-    
 end architecture arch; -- arch

@@ -11,7 +11,7 @@ package cam_package is
     
     type t_image is record
         data : std_logic_vector(15 downto 0);
-        addr : unsigned(18 downto 0);
+        addr : unsigned(7 downto 0);
     end record t_image;
     
     component opcode
@@ -61,17 +61,17 @@ package body cam_package is
     
     function cam_addr_next
         (
-            addr : unsigned(18 downto 0);
+            addr : unsigned(7 downto 0);
             href : std_logic;
             vref : std_logic
         )
         return unsigned is
     begin
         if(href = '1' and vref = '1') then
-            if(addr = "1001011000000000000‬") then
-                addr <= (others => '0');
+            if(addr = to_unsigned(307200,addr'length)) then
+                return (others => '0');
             else
-                addr <= addr + 1;
+                return addr + 1;
             end if;
         end if;
     end cam_addr_next;

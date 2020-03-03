@@ -34,7 +34,7 @@ architecture rtl of camera is
     signal busy          : std_logic;
     signal find          : std_logic;
     
-    signal write_reg     : data(7 downto 0);
+    signal write_reg     : data;
     
     signal cam           : t_image;
     
@@ -122,7 +122,7 @@ begin
     addr: process(clk_pixel_s)
     begin
         if (falling_edge(clk_pixel_s)) then
-            addr <= 
+            cam.addr <= 
             cam_addr_next
             (
                 cam.addr,
@@ -133,6 +133,6 @@ begin
     end process addr;
     
     ov7670_addr_o   <= std_logic_vector(cam.addr);
-    cam_pixel_clk_o <= clk_pixel_s;
+    cam_pclk_o <= clk_pixel_s;
     
 end rtl ; -- camera rtl camera

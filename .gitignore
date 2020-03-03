@@ -9,6 +9,7 @@ simulation/
 .qsys_edit/
 ip/
 pll_vga/
+.vscode/
 
 # Quartus File
 *.bdf
@@ -23,6 +24,7 @@ pll_vga/
 *.scopcinfo
 *.vwf
 *.qsys
+*.inc
 *.sopcinfo
 *.qws
 

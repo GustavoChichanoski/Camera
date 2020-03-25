@@ -8,14 +8,14 @@ package sdram_functions is
     
     function sdram_address 
         (
-            state    : sdram_function; 
-            sdr_addr : std_logic_vector(14 downto 0)
+            cmd  : std_logic_vector(3 downto 0); 
+            addr : std_logic_vector(14 downto 0)
         )
     return address;
     
-    function sdram_opcode(funct : sdram_function) return std_logic_vector;
+    function sdram_opcode(cmd : std_logic_vector(3 downto 0)) return std_logic_vector;
     
-    function sdram_timer (state : sdram_sm) return timer;
+    function sdram_timer (state : std_logic_vector(2 downto 0)) return timer;
     
     function sdram_read_burst
         (
@@ -24,14 +24,6 @@ package sdram_functions is
         ) 
     return data;
     
-    function sdram_function_next
-        (
-            first : std_logic;
-            count : timer;
-            state : sdram_sm
-        )
-    return sdram_function;
-    
     function shift_data
         (
             data_in : data(7 downto 0);
@@ -39,24 +31,17 @@ package sdram_functions is
         )
     return data;
     
-    function distance
-        (
-            start : address_type;
-            addr  : address_type
-        )
-    return address_type;
-    
 end package sdram_functions;
 
 package body sdram_functions is
     
     function sdram_opcode
         (
-            funct : sdram_function
+            cmd : std_logic_vector(3 downto 0)
         ) 
         return std_logic_vector is
     begin
-        case funct is
+        case cmd is
             when CMD_NOP                => return "0111";
             when CMD_BST                => return "0110";
             when CMD_READ  | CMD_READA  => return "0101";
@@ -71,36 +56,40 @@ package body sdram_functions is
     
     function sdram_address
         (
-            state    : sdram_function; 
-            sdr_addr : std_logic_vector(24 downto 0)
+            cmd  : std_logic_vector(3 downto 0); 
+            addr : std_logic_vector(24 downto 0)
         ) 
         return address is
     begin
-        case state is
+        case cmd is
             when CMD_WRITEA | CMD_READA | CMD_PALL => 
-                return sdr_addr(24 downto 23) & "001" & sdr_addr(9 downto 0);
+                return addr(24 downto 23) & "001" & addr(9 downto 0);
             when CMD_WRITE  | CMD_READ  | CMD_PRE  => 
-                return sdr_addr(24 downto 23) & "000" & sdr_addr(9 downto 0);
+                return addr(24 downto 23) & "000" & addr(9 downto 0);
             when CMD_MRS                           => 
-                return "000001000110011";
+                -- Reserved - Write Burst - Operation Mode - Latency Mode - Burst Type - Burst Length
+                return "00000" & "0" & "00" & "011" & "0" & "011";
             when others =>
-                return sdr_addr(24 downto 10);
+                return addr(24 downto 23) & addr(22 downto 10);
         end case;
     end sdram_address;
     
     function sdram_timer 
         (
-            state   : sdram_sm
+            state   : std_logic_vector(2 downto 0)
         ) 
         return timer is 
     begin
         case state is
-            when SM_POWER_ON => return cSetup + cRP + 2*cRC + cMRD;
-            -- return 2 + cRP + 2*cRC + cMRD; -- For simulation
-            when SM_PRECHARGE => return cRP + 2*cRC;
-            when SM_READ => return cRCD + cCAC;
-            when SM_IDLE => return cRECYCLE;
-            when SM_WRITE => return cRCD;
+            when SM_PRE     => return cRP + 2*cRC;       -- 0
+            -- when SM_POWER  => return cSetup - 1;
+            when SM_POWER   => return 2;                      -- 1
+            when SM_RMS     => return cMRD - 1;               -- 2
+            when SM_WRITE   => return cRCD + BURST_LENGTH - 4 + cRP; -- 3 : 3 + 8 + 3 - 4 : 10 * 5 ns : 70 ns
+            when SM_WRITEA  => return cRCD + BURST_LENGTH - 1 + cRP; -- 4 : 3 + 8 + 3 - 1 : 14 * 5 ns : 70 ns
+            when SM_READ    => return cRCD + cCAC  - 4;       -- 5 -- cRCD + cCAC
+            when SM_READA   => return BURST_LENGTH - 1;       -- 6
+            when SM_IDLE    => return 5;                      -- 7
         end case;
     end sdram_timer;
     
@@ -133,16 +122,16 @@ package body sdram_functions is
         return aux;
     end shift_data;
     
-    function sdram_function_next
+    function sdram_cmd
         (
             first : std_logic;
             count : timer;
-            state : sdram_sm
+            state : std_logic_vector(3 downto 0)
         )
-        return sdram_function is
+        return std_logic_vector is
     begin
         case state is
-            when SM_POWER_ON  =>
+            when SM_POWER  =>
                 if    (first = '1') then
                     return CMD_NOP;
                 elsif (count = cRP + 2*cRC + cMRD) then
@@ -154,7 +143,7 @@ package body sdram_functions is
                 else
                     return CMD_NOP;
                 end if;
-            when SM_PRECHARGE =>
+            when SM_PRE   =>
                 if   (first = '0') then
                     return CMD_PALL;
                 elsif(count = 2*cRC or count = cRC) then
@@ -162,26 +151,34 @@ package body sdram_functions is
                 else
                     return CMD_NOP;
                 end if;
-            when SM_READ      =>
-                if   (first = '0') then
+            when SM_READ   =>
+                if(first = '0') then
                     return CMD_ACT;
-                elsif(count = cRCD) then
-                    return CMD_READ;
+                elsif(count = cCAC - 1) then
+                    return CMD_READA;
                 else
                     return CMD_NOP;
                 end if;
-            when SM_WRITE     =>
-                if   (first = '0') then
+            when SM_READA  =>
+                return CMD_NOP;
+            when SM_WRITE  =>
+                if(first = '0') then
                     return CMD_ACT;
-                elsif(count = cRCD) then
-                    return CMD_WRITE;
                 else
                     return CMD_NOP;
                 end if;
-            when SM_IDLE      =>
+            when SM_WRITEA =>
+                if   (first = '0') then
+                    return CMD_WRITEA;
+                else
+                    return CMD_NOP;
+                end if;
+            when SM_IDLE   =>
+                return CMD_NOP;
+            when SM_RMS    =>
                 return CMD_NOP;
         end case;
-    end sdram_function_next;
+    end sdram_cmd;
     
     function distance
         (
@@ -203,12 +200,12 @@ package body sdram_functions is
     
     function dq_value
         (
-            state : sdram_sm;
-            count : timer
+            state   : std_logic_vector(3 downto 0);
+            counter : timer
         )
         return std_logic_vector is
     begin
-        if(count > 0) then
+        if(counter > 0) then
             return "00";
         end if;
     end dq_value;

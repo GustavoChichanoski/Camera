@@ -41,3 +41,17 @@ pll.vhd
 *.v.bak
 *.vhd.bak
 Camera_nativelink_simulation.rpt
+*.var
+*.var
+*.setup
+*.sh
+*.vho
+*.tcl
+*.sip
+*.spd
+*.spd
+*.f
+*.lib
+*.rpt
+*.rpt
+*.rpt
